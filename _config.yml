@@ -7,9 +7,9 @@ url: ''
 baseurl: 
 
 # Title of the Site
-title: What A Theme
+title: JJUUUUNNII
 # Description of the Site
-description: A customizable Jekyll portfolio theme
+description: THIS IS JJUUUUNNII'S WORLD
 # URL of Image of the Site
 site-image: /WhatATheme/assets/images/meta.jpg
 # Keywords of the Site
@@ -22,17 +22,9 @@ heroimage: https://images.pexels.com/photos/220444/pexels-photo-220444.jpeg?auto
 
 # Social Media and Contact
 # If you don't want to use any icon, you can leave them blank.
-email: thedevslot@gmail.com
-facebook_username: thedevslot
-twitter_username: thedevslot
-instagram_username: thedevslot
-linkedin_username: thedevslot
-github_username:  thedevslot
-youtube_channel_id: UCk_93NXYP-U_AOB5GfWlOow
-reddit_username: /
-behance_username: /
-dribbble_username: /
-spotify_username: /
+email: kangseung1110@gmail.com
+instagram_username: jjun_ii__
+github_username:  jjuuuunnii
 
 # Google Analytics
 google-analytics: UA-163806439-1
@@ -40,14 +32,42 @@ google-analytics: UA-163806439-1
 # Disqus
 disqus-shortname: thedevslot
 
-# Name of the Author
-author-name: TheDevsLot
+# Name of the Authors
+author-name: Kang SeungJun
 # URL for the Image of the Author
-author-image: https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png
+author-image: /assets/images/profile.jpg
 # 60 Words About the Author
-author-about: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eget pharetra velit, dapibus bibendum ex. Maecenas vitae laoreet mauris, ac luctus metus. Aliquam luctus velit vel ipsum feugiat, vel venenatis mauris hendrerit. Sed at vulputate sapien, eget vehicula dolor. Aliquam volutpat pulvinar neque sit amet sodales.
-# URL to the Author's Profile (i.e., Github, Twitter, Stackoverflow, etc)
-author-url: https://github.com/thedevslot
+author-about-history: 
+ 
+
+ 구름톤 UNIV. 1기 백앤드 참여 (2023.09.19 ~ 2023. 12.29) 
+
+ GDSC 1기 Server/Cloud Member (2023.09.15 ~ ) 
+
+ Clipper 0기 프로젝트 백앤드 멘토 (2023.08.10 ~ 2023.09.15) 
+
+ 2023 한이음 프로젝트 (2023.03.10 ~ 2023. 10.09) 
+
+ (주)발켄쉐어링 백앤드 개발자 (2023.03.28 ~ ) 
+
+ HI-SW봉사단 (2023.03.21 ~ )  
+
+ 동국톤 백앤드 참여 (2023.11.18 ~ 2023.11.20)  
+
+ 신서중학교 특수학급 멘토링 (2023.09.21 ~ 2023. 11.30)
+
+author-about-price:
+
+
+ HI-SW 봉사단 우수교안 수상 (2023.06.22) 
+
+ 구름톤 UNIV.1기 대상 수상 (2023.11.19) 
+
+ 동국톤 1기 대상 수상 (2023.12.20) 
+
+
+
+author-url: https://github.com/jjuuuunnii
 
 # SASS
 sass:

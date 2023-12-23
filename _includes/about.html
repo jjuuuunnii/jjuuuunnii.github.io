@@ -1,29 +1,60 @@
 <section class="hero is-fullheight has-text-centered has-background-white-ter" id="about">
     <div class="hero-body">
         <div class="container">
-            <div class="columns">
-                <div class="column is-one-fifth-desktop is-one-fifth-tablet is-one-fifth-fullhd">
-                    <figure class="image">
-                        <img class="is-rounded" src="{{site.author-image}}" alt="{{site.author-name}}">
-                    </figure>
-                </div>
-                <div class="column has-text-left-desktop has-text-left-tablet has-text-left-fullhd has-text-left-widescreen">
-                    <p>{{site.author-about}}</p>
-                    <br>
-                    <div class="container columns is-centered">
+            <div class="columns is-vcentered">
+
+                <!-- 왼쪽 열: 자기소개 -->
+                <div class="column is-two-thirds">
+                    <!-- 이미지 박스 -->
+                    <div class="box" style="align-items: center; display: flex; flex-direction: column;">
+                        <!-- 이미지 크기를 조정합니다. 'is-256x256' 또는 필요한 크기로 변경하세요. -->
+                        <figure class="image is-200x200" style="margin: 0 auto;">
+                            <img class="is-rounded" src="{{site.author-image}}" alt="{{site.author-name}}">
+                        </figure>
+                        <br>
+
+                        <!-- 자기소개 텍스트 -->
                         <div>
-                            <a href="{{site.url}}{{site.baseurl}}/#contact"
-                                class="button is-rounded is-uppercase has-text-weight-normal is-black is-outlined">Contact
-                                Me</a>
-                            </a>
-                        </div>
-                        <div>
-                            <a href="{{site.url}}{{site.baseurl}}/blog"
-                                class="button is-rounded is-uppercase has-text-weight-normal is-black is-outlined">Blog</a>
-                            </a>
+                            <p> 안녕하세요! 동국대학교 멀티미디어 공학과의 강승준입니다.  다양한 상황에 맞게 MSA를 구성하고, 체계적인 인프라를 구축하는 Devops Engineer가 되는 것을 목표로, 현재 백앤드 개발자로서 여러 프로젝트에 참여하며 밤낮이 없는 하루를 살고 있습니다.</p>
+                        <br>
+
+                            <p>주로 Spring과 Spring Boot를 활용하여 개발하며, AWS, GCP를 통한 배포와 WAF, NACL을 활용한 보안, Spring Security, Oauth2를 이용한 소셜 로그인, 라이브러리를 사용하지 않은 소셜로그인, STOMP 기반의 소켓 채팅, 그리고 이벤트 기반의 비동기 처리 등의 기술 경험을 보유하고 있습니다. </p>
+    
+                            <p>최근에는 MSA 아키텍쳐 설계, 도커를 활용한 컨테이너화, k8s 등 인프라 아키텍쳐에 관심을 가지고 공부하고 있습니다.</p>
+    
+                            <p> ”백문이불여일타!” 모르는 것을 두려워하지 않고, 일단 실천하고 도전합니다. 항상 겸손한 자세로 새로운 지식을 받아들이며, 단순히 손으로 하는 코딩이 아닌, 마음을 담아 개발하려 노력합니다. </p>
                         </div>
                     </div>
                 </div>
+
+                <!-- 오른쪽 열: HISTORY와 PRICE -->
+                <div class="column">
+                    <div class="box" style="padding: 110px 0;">
+                        <h2 class="title is-4">HISTORY</h2>
+                        <p>{{site.author-about-history | newline_to_br }}</p>
+                    </div>
+                    
+                    <!-- PRICE 섹션 -->
+                    <div class="box" style="padding: 110px 0;">
+                        <h2 class="title is-4">PRICE</h2>
+                        <p>{{site.author-about-price | newline_to_br }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Me와 Blog 버튼 -->
+            <div class="columns is-centered">
+                <div class="column is-narrow">
+                    <a href="{{site.url}}{{site.baseurl}}/#contact" class="button is-rounded is-uppercase has-text-weight-normal is-black is-outlined">
+                        Contact Me
+                    </a>
+                </div>
+                <div class="column is-narrow">
+                    <a href="{{site.url}}{{site.baseurl}}/blog" class="button is-rounded is-uppercase has-text-weight-normal is-black is-outlined">
+                        Blog
+                    </a>
+                </div>
             </div>
         </div>
+    </div>
 </section>
