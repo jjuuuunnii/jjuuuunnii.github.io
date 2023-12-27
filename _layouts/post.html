@@ -19,10 +19,11 @@ layout: compress
           <h1 class="title has-text-centered is-2 has-text-weight-semibold ">{{page.title}}</h1>
         </a>
         <hr class="has-background-black">
-        <div class="columns is-variable is-5">
-          <div class="column is-6">
-            <figure class="image is-16by9 has-shadow">
-              <img src="{{page.post-image}}" alt="{{post.title}}" id="post-image">
+        <div class="columns is-variable is-5 is-flex" style="justify-content: center;">
+          <!-- 이미지를 포함하는 칼럼을 왼쪽에 배치하고, flexbox를 사용하여 정렬 -->
+          <div class="column is-offset-1 is-4" style="flex-grow: 0;">
+            <figure class="image has-shadow">
+              <img src="{{page.post-image}}" alt="{{post.title}}" id="post-image" style="width: 600px"; height: auto;">
             </figure>
           </div>
           <div class="subtitle column is-5 has-text-left-desktop has-text-left-fullhd has-text-left-tablet has-text-center-mobile">
