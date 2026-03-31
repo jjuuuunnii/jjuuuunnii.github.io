@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>강승준 | Backend Developer</title>
+  <meta name="description" content="항상 WHY?를 먼저 고민하는 백엔드 개발자 강승준의 포트폴리오">
+  <meta property="og:title" content="강승준 | Backend Developer">
+  <meta property="og:description" content="항상 WHY?를 먼저 고민하는 백엔드 개발자">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Grain 텍스처 오버레이 -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- 네비게이션 -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">jayden.dev</a>
+      <button class="nav-toggle" aria-label="메뉴 열기">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#activities">Activities</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <!-- 히어로 -->
+    <section id="hero">
+      <div class="hero-inner">
+        <div class="hero-profile reveal">
+          <div class="image-wrapper">
+            <img src="" alt="프로필 사진" id="about-profile-img">
+          </div>
+        </div>
+        <div class="hero-content">
+          <p class="hero-label reveal">Backend Developer</p>
+          <h1 class="hero-name reveal"></h1>
+          <p class="hero-tagline"></p>
+          <p class="hero-description reveal" id="about-description"></p>
+          <div class="hero-buttons reveal">
+            <div class="hero-contacts" id="about-contacts"></div>
+            <div class="hero-cta">
+              <a href="#projects" class="btn btn-primary">프로젝트 보기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- 스킬 -->
+    <section id="skills">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-number">01</span>
+          <h2 class="section-title">Skills</h2>
+          <div class="section-line"></div>
+        </div>
+        <div class="skills-grid" id="skills-grid"></div>
+      </div>
+    </section>
+
+    <!-- 경력 -->
+    <section id="experience">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-number">02</span>
+          <h2 class="section-title">Experience</h2>
+          <div class="section-line"></div>
+        </div>
+        <div class="experience-header reveal" id="experience-header"></div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </section>
+
+    <!-- 프로젝트 -->
+    <section id="projects">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-number">03</span>
+          <h2 class="section-title">Projects</h2>
+          <div class="section-line"></div>
+        </div>
+        <div class="projects-grid" id="projects-grid"></div>
+      </div>
+    </section>
+
+    <!-- 활동/수상 -->
+    <section id="activities">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-number">04</span>
+          <h2 class="section-title">Activities & Awards</h2>
+          <div class="section-line"></div>
+        </div>
+        <div class="activities-grid" id="activities-content"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 프로젝트 모달 -->
+  <div class="modal-overlay" id="project-modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container" role="dialog" aria-modal="true">
+      <button class="modal-close" aria-label="닫기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-image-area" id="modal-image-area"></div>
+      <div class="modal-content" id="modal-content"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 강승준. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/animations.js"></script>
+</body>
+</html>
