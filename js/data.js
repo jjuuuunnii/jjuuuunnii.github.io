@@ -306,7 +306,7 @@ const PORTFOLIO_DATA = {
       description: "지역별 전쟁 뉴스를 지도에서 보여주고 기부로 연결하는 서비스",
       role: "뉴스를 지역별로 수집해 지도에 보여주는 백엔드를 설계·구현했습니다.",
       highlights: [
-        "크롤링 서버(Flask)는 1시간마다 뉴스를 수집해 API로 보내고, 저장·조회는 API 서버(Spring Boot)가 맡도록 분리 — 크롤링이 실패해도 메인 API는 영향받지 않는 구조",
+        "크롤링 서버(Flask)는 스케줄에 따라 뉴스를 수집해 API로 보내고, 저장·조회는 API 서버(Spring Boot)가 맡도록 분리 — 크롤링이 실패해도 메인 API는 영향받지 않는 구조",
       ],
       tech: ["Java", "Spring Boot", "JPA", "MySQL", "Flask"],
       repo: "https://github.com/GDSC-DGU/2024-SolutionChallenge-Wave",
