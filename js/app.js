@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderSkills(d.skills);
   renderExperience(d.experience);
   renderProjects(d.projects);
-  renderActivities(d.activities, d.awards, d.education, d.military);
+  renderVentures(d.ventures);
+  renderActivities(d.activities, d.awards, d.education, d.military, d.languages);
   initNavbar();
   initModal();
   initAnimations();
@@ -18,6 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- 히어로 ---
 function renderHero(hero) {
   const section = document.getElementById("hero");
+
+  document.getElementById("hero-label").textContent = hero.label;
 
   const nameEl = section.querySelector(".hero-name");
   nameEl.innerHTML = `${hero.name} <span class="accent">${hero.nickname}</span>`;
@@ -64,7 +67,15 @@ function renderExperience(exp) {
     </div>
     <div class="exp-period">${exp.period}</div>
     <div class="exp-product">${exp.product} — ${exp.productDescription}</div>
+    ${
+      exp.stats && exp.stats.length > 0
+        ? `<div class="exp-stats">
+        ${exp.stats.map((s) => `<div class="exp-stat"><span class="exp-stat-value">${s.value}</span><span class="exp-stat-label">${s.label}</span></div>`).join("")}
+      </div>`
+        : ""
+    }
     <div class="exp-summary">${exp.summary}</div>
+    ${exp.note ? `<div class="exp-note">${exp.note}</div>` : ""}
   `;
 
   const timeline = document.getElementById("timeline");
@@ -221,8 +232,104 @@ function initCarousels() {
   });
 }
 
+// --- 창업 ---
+function renderVentures(ventures) {
+  const root = document.getElementById("ventures-content");
+  if (!ventures) return;
+  const { intro, program, items } = ventures;
+
+  const introHTML = `
+    <div class="venture-intro reveal">
+      <div class="venture-intro-text">
+        <div class="venture-eyebrow">${intro.eyebrow}</div>
+        <p class="venture-lesson">${intro.lesson}</p>
+      </div>
+      <div class="venture-delta">
+        <div class="venture-delta-item">
+          <span class="venture-delta-value muted">${intro.delta.from.value}</span>
+          <span class="venture-delta-label">${intro.delta.from.label}</span>
+        </div>
+        <svg class="venture-delta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <div class="venture-delta-item">
+          <span class="venture-delta-value">${intro.delta.to.value}</span>
+          <span class="venture-delta-label">${intro.delta.to.label}</span>
+        </div>
+        <div class="venture-formula">${intro.formula}</div>
+      </div>
+    </div>
+    ${
+      program
+        ? `<div class="venture-program reveal">
+        <span class="venture-program-tag">Program</span>
+        <span class="venture-program-name">${program.name}</span>
+        <span class="venture-program-desc">${program.description}</span>
+      </div>`
+        : ""
+    }
+  `;
+
+  const cardsHTML = items
+    .map(
+      (v, i) => `
+    <article class="venture-card reveal" style="transition-delay: ${i * 80}ms">
+      <div class="venture-media"><img src="${v.image}" alt="${v.name} 화면" loading="lazy"></div>
+      <div class="venture-body">
+        <div class="venture-meta">
+          <span class="venture-index">${v.index}</span>
+          <span>${v.period}</span><span class="dot"></span><span>${v.role}</span>
+        </div>
+        <h3 class="venture-name">${v.name}</h3>
+        <p class="venture-oneliner">${v.oneLiner}</p>
+        <span class="venture-status">${v.status}</span>
+        <p class="venture-who"><span>누구의 어떤 문제</span>${v.who}</p>
+        <div class="venture-metrics">
+          ${v.metrics
+            .map(
+              (m) => `
+            <div class="venture-metric ${m.tone}">
+              <span class="venture-metric-value">${m.value}</span>
+              <span class="venture-metric-label">${m.label}</span>
+            </div>`
+            )
+            .join("")}
+        </div>
+        <button class="venture-toggle" type="button" aria-expanded="false">
+          판단 과정 자세히 보기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="venture-details">
+          <div class="venture-details-inner">
+            ${v.sections
+              .map(
+                (sec) => `
+              <div class="timeline-section">
+                <div class="timeline-section-label ${sec.tone}">${sec.label}</div>
+                <ul>${sec.items.map((it) => `<li>${it}</li>`).join("")}</ul>
+              </div>`
+              )
+              .join("")}
+            ${v.learned ? `<div class="venture-learned">${v.learned}</div>` : ""}
+          </div>
+        </div>
+      </div>
+    </article>`
+    )
+    .join("");
+
+  root.innerHTML = introHTML + `<div class="venture-list">${cardsHTML}</div>`;
+
+  root.querySelectorAll(".venture-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".venture-card");
+      const open = card.classList.toggle("open");
+      btn.setAttribute("aria-expanded", String(open));
+      btn.firstChild.textContent = open ? "접기 " : "판단 과정 자세히 보기 ";
+    });
+  });
+}
+
 // --- 활동/수상 ---
-function renderActivities(activities, awards, education, military) {
+function renderActivities(activities, awards, education, military, languages = []) {
   const content = document.getElementById("activities-content");
   content.innerHTML = `
     <div class="activities-section reveal">
@@ -238,7 +345,7 @@ function renderActivities(activities, awards, education, military) {
         )
         .join("")}
 
-      <div class="activities-section-title" style="margin-top: 24px;">Education</div>
+      <div class="activities-section-title" style="margin-top: 24px;">Education · Military · Language</div>
       <div class="activity-item">
         <div class="activity-title">${education.university} ${education.major}</div>
         <div class="activity-desc">${education.period}</div>
@@ -247,6 +354,15 @@ function renderActivities(activities, awards, education, military) {
         <div class="activity-title">${military.title} (${military.role})</div>
         <div class="activity-desc">${military.period}</div>
       </div>
+      ${languages
+        .map(
+          (l) => `
+      <div class="activity-item">
+        <div class="activity-title">${l.title}</div>
+        <div class="activity-desc">${l.description}</div>
+      </div>`
+        )
+        .join("")}
     </div>
 
     <div class="activities-section reveal">
