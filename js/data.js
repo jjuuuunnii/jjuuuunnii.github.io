@@ -178,7 +178,7 @@ const PORTFOLIO_DATA = {
         who: "언제 잊을지 모르는데 알림 시점은 직접 정해야 했던 ADHD 경향의 사람들",
         metrics: [
           { value: "86,000줄", label: "72일간 작성한 백엔드 코드 (테스트 포함)", tone: "neutral" },
-          { value: "0건", label: "고객 인터뷰", tone: "miss" },
+          { value: "602개", label: "Claude Code 하네스로 나눈 개발 태스크 (1개 = PR 1개)", tone: "neutral" },
           { value: "약 3%", label: "ADHD 커뮤니티 가입인사 195건 중 '망각'을 어려움으로 꼽은 글", tone: "miss" },
           { value: "21원 < 64원", label: "유저당 제휴 수익(계산) < 유저당 AI 원가", tone: "miss" },
         ],
@@ -198,7 +198,7 @@ const PORTFOLIO_DATA = {
             label: "놓친 것",
             tone: "problem",
             items: [
-              "고객 인터뷰는 0건이었고, 분석 이벤트는 한 번도 호출되지 않았습니다. 계획한 지표 73개 중 약 67%는 측정을 시작하지 못했습니다.",
+              "분석 이벤트는 한 번도 호출되지 않았고, 계획한 지표 73개 중 약 67%는 측정을 시작하지 못했습니다.",
             ],
           },
           {
