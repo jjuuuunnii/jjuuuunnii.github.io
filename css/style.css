@@ -758,7 +758,7 @@ section {
 }
 
 .timeline-card.open .timeline-card-body {
-  max-height: 1600px;
+  max-height: 3200px;
 }
 
 .timeline-card-content {
@@ -1115,6 +1115,21 @@ section {
   gap: 4px;
   padding-top: 14px;
   border-top: 1px solid var(--border);
+}
+
+.project-repo {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-hover);
+  transition: color var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+
+.project-repo:hover {
+  color: var(--accent);
+  border-color: var(--border-accent);
 }
 
 .project-tech-tag {
@@ -1888,6 +1903,31 @@ footer {
   color: var(--text-faint);
   border-top: 1px solid var(--border);
   letter-spacing: 0.02em;
+}
+
+/* 한국어 본문 — 단어 중간에서 줄이 끊기지 않게 */
+.venture-metric-label,
+.venture-who,
+.venture-oneliner,
+.venture-learned,
+.timeline-subtitle,
+.timeline-section p,
+.timeline-section li,
+.exp-summary,
+.exp-note,
+.exp-product,
+.exp-stat-label,
+.project-description,
+.project-role,
+.project-highlights li,
+.modal-description,
+.modal-role,
+.modal-highlights li,
+.activity-title,
+.activity-desc,
+.award-text {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* ============================================================

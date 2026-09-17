@@ -83,7 +83,7 @@ function renderExperience(exp) {
     .map(
       (a, i) => `
     <div class="timeline-item reveal" style="transition-delay: ${i * 80}ms">
-      <div class="timeline-card" data-index="${i}">
+      <div class="timeline-card${i === 0 ? " open" : ""}" data-index="${i}">
         <div class="timeline-card-header">
           <div class="timeline-card-left">
             ${a.version ? `<span class="version-badge">${a.version}</span>` : ""}
@@ -135,9 +135,7 @@ function renderExperience(exp) {
 
   timeline.querySelectorAll(".timeline-card").forEach((card) => {
     card.addEventListener("click", () => {
-      const isOpen = card.classList.contains("open");
-      timeline.querySelectorAll(".timeline-card.open").forEach((c) => c.classList.remove("open"));
-      if (!isOpen) card.classList.add("open");
+      card.classList.toggle("open");
     });
   });
 }
@@ -194,6 +192,7 @@ function renderProjects(projects) {
         <div class="project-tech">
           ${p.tech.map((t) => `<span class="project-tech-tag">${t}</span>`).join("")}
         </div>
+        ${p.repo ? `<a class="project-repo" href="${p.repo}" target="_blank" rel="noopener">GitHub 저장소 ↗</a>` : ""}
       </div>
     </div>`;
       }
@@ -455,6 +454,7 @@ function initModal() {
       <div class="modal-tech">
         ${p.tech.map((t) => `<span class="modal-tech-tag">${t}</span>`).join("")}
       </div>
+      ${p.repo ? `<a class="project-repo" href="${p.repo}" target="_blank" rel="noopener">GitHub 저장소 ↗</a>` : ""}
     `;
 
     modal.classList.add("active");
@@ -503,7 +503,7 @@ function initModal() {
     const card = e.target.closest(".project-card");
     if (!card) return;
     // 캐러셀 버튼 클릭은 무시
-    if (e.target.closest(".carousel-btn") || e.target.closest(".carousel-dot")) return;
+    if (e.target.closest(".carousel-btn") || e.target.closest(".carousel-dot") || e.target.closest(".project-repo")) return;
     const index = [...card.parentElement.children].indexOf(card);
     openModal(index);
   });
