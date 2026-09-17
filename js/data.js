@@ -180,7 +180,7 @@ const PORTFOLIO_DATA = {
         oneLiner: "AI가 알림 시점을 정해주는 일정 앱",
         status: "App Store 출시 후 종료",
         image: "images/forget_duo.jpg",
-        who: "가설 타깃: ADHD 성향 성인 — 실행기능 저하 자기보고 + 평생 깜빡 패턴 (진단 불문)",
+        who: "타깃: ADHD 성향 성인 — 실행기능 저하 자기보고 + 평생 깜빡 패턴 (진단 불문)",
         metrics: [
           { value: "86,000줄", label: "72일간 Claude Code와 함께 작성한 백엔드 코드 (절반이 테스트)", tone: "neutral" },
           { value: "602개", label: "Claude Code 하네스로 나눈 개발 태스크 (1개 = PR 1개)", tone: "neutral" },
