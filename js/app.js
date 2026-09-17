@@ -293,8 +293,13 @@ function renderVentures(ventures) {
             )
             .join("")}
         </div>
+        ${
+          v.tech && v.tech.length > 0
+            ? `<div class="venture-tech">${v.tech.map((t) => `<span class="project-tech-tag">${t}</span>`).join("")}</div>`
+            : ""
+        }
         <button class="venture-toggle" type="button" aria-expanded="false">
-          판단 과정 자세히 보기
+          자세히 보기
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="venture-details">
@@ -323,7 +328,7 @@ function renderVentures(ventures) {
       const card = btn.closest(".venture-card");
       const open = card.classList.toggle("open");
       btn.setAttribute("aria-expanded", String(open));
-      btn.firstChild.textContent = open ? "접기 " : "판단 과정 자세히 보기 ";
+      btn.firstChild.textContent = open ? "접기 " : "자세히 보기 ";
     });
   });
 }

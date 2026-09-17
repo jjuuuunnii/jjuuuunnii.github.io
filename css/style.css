@@ -1403,6 +1403,13 @@ section {
   line-height: 1.4;
 }
 
+.venture-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 14px;
+}
+
 .venture-toggle {
   display: inline-flex;
   align-items: center;

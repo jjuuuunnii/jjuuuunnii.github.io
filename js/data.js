@@ -6,17 +6,17 @@
 
 const PORTFOLIO_DATA = {
   meta: {
-    title: "강승준 | Backend Developer · Product Builder",
-    description: "기술의 WHY에서 사업의 WHY까지 묻는 백엔드 개발자 강승준의 포트폴리오",
+    title: "강승준 | Backend Developer · Product Manager",
+    description: "백엔드 개발팀장, 그리고 두 번의 공동창업 PM — 강승준의 포트폴리오",
   },
 
   hero: {
-    label: "Backend Developer · Product Builder",
+    label: "Backend Developer · Product Manager",
     name: "강승준",
     nickname: "Jayden",
-    tagline: "기술의 WHY에서, 사업의 WHY까지",
+    tagline: "코드로 만들고, 데이터로 판단합니다",
     description:
-      "IoT 공유 자전거 플랫폼에서 3인 백엔드 팀을 이끌며 V1→V4 아키텍처 전환을 주도했습니다. 블로킹 폴링을 이벤트 구조로, 거대한 서비스 클래스를 도메인 단위로 바꾸며 기술 선택마다 이유를 물었습니다. 회사가 문을 닫는 과정에서 사업의 방향은 묻지 않았다는 걸 알았고, 이후 두 번의 공동창업에서 만든 것을 데이터로 검증하고 판단하는 일까지 맡았습니다.",
+      "IoT 공유 자전거 플랫폼의 백엔드 개발팀장으로 3인 팀을 이끌며 V1→V4 아키텍처 전환을 주도했습니다. 이후 두 번의 공동창업에서는 PM으로 문제 정의부터 출시, 지표 설계, 종료 판단까지 맡았습니다. 첫 창업에서는 검증 없이 만들다 실패를 알아차리기까지 약 3개월이 걸렸고, 두 번째에는 출시 전에 합격선과 계측을 먼저 세워 런칭 19일 만에 데이터로 판단했습니다.",
     profileImage: "images/profile.png",
     contacts: {
       email: "kangseung1110@gmail.com",
@@ -44,19 +44,20 @@ const PORTFOLIO_DATA = {
     achievements: [
       {
         version: "V1 → V2",
-        title: "IoT 명령·응답 구조 전환: 블로킹 폴링 → 이벤트 소비",
+        title: "IoT 명령·응답 구조 전환: 블로킹 폴링 → SSE 푸시",
         problem:
-          "대여 요청 스레드가 MQTT 명령을 보낸 뒤, 장비 응답이 Redis에 기록되기를 2초 간격·최대 11회(22초) 폴링하며 기다리는 구조였습니다. 대여 한 건에 명령이 4번 오가 스레드 하나가 1분 반 가까이 묶였고, 동시 대여가 늘면 스레드 풀이 고갈돼 새 요청을 받지 못할 위험이 있었습니다.",
+          "대여 요청 스레드가 MQTT 명령을 보낸 뒤, 장비 응답이 Redis에 기록되기를 2초 간격·최대 11회(22초) 폴링하며 기다렸습니다. 대여 한 건에 명령이 4번 오가 스레드 하나가 1분 반 가까이 묶였고, 동시 대여가 늘면 스레드 풀이 고갈돼 새 요청을 받지 못할 위험이 있었습니다. 근본 원인은 서버가 앱에 먼저 결과를 보낼 수단이 없어, HTTP 요청·응답 한 번 안에서 결과를 돌려주려면 스레드가 기다릴 수밖에 없었다는 점이었습니다.",
         solution: [
-          "명령을 발행한 뒤 요청 스레드를 바로 반환하고, 장비 응답은 이벤트로 소비해 상태 갱신·SSE 앱 푸시로 이어지게 전환",
-          "장비 통신용으로만 쓰이던 Kafka를 서버 5개 분리와 함께 서버 간 비동기 통신으로 확장 — 서버별 토픽·컨슈머 그룹 설계",
-          "명령 발행 시 보상 작업을 예약하고 정상 응답이 오면 취소하는 타임아웃 보상 (ExecutorService 10초 → Quartz 12초·보상 Job 5종)",
-          "기체·명령 단위 상태 키로 중복 실행 방지",
-          "RabbitMQ·Redis Pub/Sub과 비교해 '유실된 명령을 다시 소비할 수 있는가'를 기준으로 선택",
+          "결과를 나중에 밀어 줄 통로로 SSE를 팀에 먼저 제안하고, 운영과 병행해 2주간 SSE·Kafka를 학습",
+          "SSE 전용 서버를 신설·구현(모듈 커밋 98%) — 성공·오류 토픽을 구독해 SseEmitter로 해당 앱에 결과 전달",
+          "요청에는 접수만 응답하고 스레드를 곧바로 반환, 장비 회신이 도착하면 소비한 서버가 상태를 갱신해 SSE로 전달",
+          "서버를 역할별 5개로 나누고, 장비 통신에만 쓰던 Kafka를 서버 간 비동기 통신으로 확장 — 서버별 토픽·컨슈머 그룹 설계 (RabbitMQ·Redis Pub/Sub과 '유실된 메시지를 다시 소비할 수 있는가' 기준으로 비교)",
+          "응답이 오지 않는 경우에 대비해 명령 발행 시 보상 작업을 예약하고 정상 응답이 오면 취소 (ExecutorService 10초 → Quartz 12초·보상 Job 5종), 기체·명령 단위 상태 키로 중복 실행 방지",
+          "이후 서비스 내 채팅 가능성으로 양방향 통신이 필요해지자 4세대에서 WebSocket으로 전환 — 무거운 STOMP 대신 순수 WebSocket 선택",
         ],
         result:
-          "전 서버에서 폴링 루프 0건 — 응답을 기다리며 요청 스레드를 점유하던 구조를 제거하고, 응답이 오지 않는 경우는 보상 작업으로 처리",
-        tags: ["Kafka", "MQTT", "SSE", "Quartz"],
+          "전 서버에서 폴링 루프 0건 — 요청 스레드가 장비 응답을 기다리지 않고, 결과는 회신이 도착하는 즉시 SSE로 앱에 전달",
+        tags: ["SSE", "Kafka", "MQTT", "Quartz", "WebSocket"],
       },
       {
         version: "V2 → V3",
@@ -131,24 +132,6 @@ const PORTFOLIO_DATA = {
   },
 
   projects: [
-    {
-      title: "포게티",
-      subtitle: "AI 일정 관리 앱 · App Store 출시",
-      period: "2026.03 ~ 2026.06",
-      team: "공동창업 · 백엔드 전담",
-      image: "images/forget_card.jpg",
-      description:
-        "자연어 한 줄로 일정을 등록하면 AI가 알림 시점을 정하고, 전날·당일 푸시와 직전 AI 음성 전화로 알려주는 캘린더",
-      role: "백엔드 전담·기획 (협업: 프론트엔드 1인) — Claude Code 기반 AI 개발 하네스 설계",
-      highlights: [
-        "72일간 커밋 1,138건 · 프로덕션 43,792줄 + 테스트 42,704줄 (약 1:1)",
-        "Claude Code 하네스: Phase→세션→태스크 3계층 분해(121 Phase·602 태스크, 태스크 1개 = PR 1개), 규칙 문서 23개·자동 훅 4종",
-        "ArchUnit 아키텍처 테스트 15개 — AI가 반복한 실수를 테스트로 고정",
-        "Anthropic·OpenAI API로 자연어 일정 파싱, 호출 비용 전건 DB 계측",
-        "Quartz 리마인드 스케줄링 · FCM 푸시 · Twilio VoIP 음성 전화",
-      ],
-      tech: ["Java 21", "Spring Boot 4", "MySQL", "Redis", "Quartz", "Flyway", "Claude Code"],
-    },
     {
       title: "Giggle",
       subtitle: "공개 소프트웨어 개발자 대회 우수작 선정",
@@ -230,12 +213,12 @@ const PORTFOLIO_DATA = {
     },
   ],
 
-  // 창업 — 만든 것을 데이터로 검증하고 판단한 기록
+  // 창업 — 공동창업 2회: 만든 것과 그것을 데이터로 판단한 기록
   ventures: {
     intro: {
       eyebrow: "From Tech WHY to Business WHY",
       lesson:
-        "발켄에서 기술의 왜는 끝까지 물었지만, 이 사업의 방향이 맞는지는 묻지 않았습니다. 그래서 다음 두 번은 직접 창업해, 만든 것을 데이터로 검증하고 멈출 때를 판단하는 일을 맡았습니다.",
+        "발켄에서는 기술의 왜는 끝까지 물었지만, 이 사업의 방향이 맞는지는 묻지 않았습니다. 그래서 두 번의 공동창업에서는 PM으로 문제 정의부터 검증, 종료 판단까지 맡았습니다.",
       delta: {
         from: { value: "약 3개월", label: "포게티 · 실패를 알아차리기까지" },
         to: { value: "19일", label: "OFF STAGE · 런칭 후 종료 판단까지" },
@@ -251,24 +234,35 @@ const PORTFOLIO_DATA = {
         index: "01",
         name: "포게티",
         period: "2026.03 — 2026.06",
-        role: "공동창업 · PM · 백엔드",
+        role: "공동창업 · PM · 백엔드 전담",
         oneLiner: "언제 알려줄지 AI가 정해주는 캘린더",
         status: "App Store 출시 후 종료",
         image: "images/forget_duo.jpg",
         who: "언제 잊을지 모르는데 알림 시점은 직접 정해야 했던 ADHD 경향의 사람들",
         metrics: [
-          { value: "72일", label: "개발 기간", tone: "neutral" },
-          { value: "11개", label: "사전등록 가설", tone: "neutral" },
+          { value: "86,000줄", label: "72일간 작성한 백엔드 (프로덕션 : 테스트 ≈ 1 : 1)", tone: "neutral" },
+          { value: "602개", label: "Claude Code 하네스로 분해한 태스크 (1개 = PR 1개)", tone: "neutral" },
           { value: "0건", label: "고객 인터뷰", tone: "miss" },
-          { value: "6순위", label: "망각의 통점 순위", tone: "miss" },
+          { value: "6순위", label: "커뮤니티 글 195건 중 '망각'의 통점 순위", tone: "miss" },
         ],
+        tech: ["Java 21", "Spring Boot 4", "MySQL", "Redis", "Quartz", "Flyway", "Claude Code", "Anthropic · OpenAI API"],
         sections: [
           {
-            label: "설계한 것",
+            label: "개발 — 백엔드 전담 (협업: 프론트엔드 1인)",
+            tone: "solution",
+            items: [
+              "커밋 1,138건 · 프로덕션 43,792줄 + 테스트 42,704줄로 App Store 출시",
+              "Claude Code 하네스: Phase→세션→태스크 3계층 분해(121 Phase·602 태스크), 규칙 문서 23개·자동 훅 4종",
+              "ArchUnit 아키텍처 테스트 15개 — AI가 낸 실수를 테스트로 박제해 재발 방지",
+              "Anthropic·OpenAI API로 자연어 일정 파싱, 호출 비용 전건 DB 계측",
+              "Quartz 리마인드 스케줄링 · FCM 푸시 · Twilio VoIP 음성 전화",
+            ],
+          },
+          {
+            label: "기획 — 설계한 것",
             tone: "solution",
             items: [
               "PRD 3판 · North Star KPI(AI 전화 후 7일 내 일정 재등록 비율) · 사전등록 가설 11개",
-              "App Store 출시까지 백엔드 전담 (개발 상세는 Projects 참고)",
             ],
           },
           {
@@ -306,6 +300,7 @@ const PORTFOLIO_DATA = {
           { value: "₩864", label: "CAC (1차 ₩1,745)", tone: "ok" },
           { value: "1.7%", label: "D7 잔존 (D1 14.5%)", tone: "miss" },
         ],
+        tech: ["SQL", "GA4", "Meta 광고", "App Store Connect", "Claude Code"],
         sections: [
           {
             label: "출시 전에 둔 것",
@@ -313,7 +308,15 @@ const PORTFOLIO_DATA = {
             items: [
               "유저 인터뷰 10명으로 '릴레이 보정' 문제 정의",
               "합격선 5개를 런칭 전에 고정 (초대 수락 60% · 전원 완료 70% 등)",
-              "읽기 전용 DB와 GA4·광고·스토어 데이터를 AI 분석 하네스에 연결 — 근거 태그([실측]/[추정])와 반론 의무를 규칙으로",
+            ],
+          },
+          {
+            label: "측정 — AI 데이터 분석 하네스",
+            tone: "solution",
+            items: [
+              "읽기 전용 DB 계정(SELECT 전용·타임아웃 30초)과 어드민 API·GA4·Meta 픽셀·스토어·광고 API를 AI에 연결",
+              "지표 정의서(이벤트·퍼널·리텐션)를 단일 기준으로 두고, 분석 에이전트에 근거 태그([실측]/[추정])와 반론 의무를 규칙화",
+              "방문 로그 나흘치 유실 사고 — AI의 오진을 용량 증설 테스트로 직접 교정, 이중 수집한 GA4 Data API로 일별 수치 복원, 자동 증설·실패 경보·일일 수집량 점검으로 재발 방지",
             ],
           },
           {
@@ -324,7 +327,6 @@ const PORTFOLIO_DATA = {
               "AI가 완성한 '저장 직후 초대 권유' 기능을 실측(저장 후 초대 0건)으로 당일 기각",
               "과금 조건 도달 0명 → 크레딧 과금 보류 제안",
               "홍대 포토부스 앞 오프라인 검증 104명 → 가입 0명, 채널이 아니라 전제의 문제로 판단",
-              "방문 로그 나흘치 유실 사고 — AI의 오진을 용량 증설 테스트로 직접 교정하고, 이중 수집한 GA4 Data API로 일별 수치 복원",
             ],
           },
           {
