@@ -251,12 +251,14 @@ function renderVentures(ventures) {
   const { intro, program, items } = ventures;
 
   const introHTML = `
-    <div class="venture-intro reveal">
+    <div class="venture-intro${intro.delta ? "" : " venture-intro--solo"} reveal">
       <div class="venture-intro-text">
         <div class="venture-eyebrow">${intro.eyebrow}</div>
         <p class="venture-lesson">${intro.lesson}</p>
       </div>
-      <div class="venture-delta">
+      ${
+        intro.delta
+          ? `<div class="venture-delta">
         <div class="venture-delta-item">
           <span class="venture-delta-value muted">${intro.delta.from.value}</span>
           <span class="venture-delta-label">${intro.delta.from.label}</span>
@@ -267,7 +269,9 @@ function renderVentures(ventures) {
           <span class="venture-delta-label">${intro.delta.to.label}</span>
         </div>
         <div class="venture-formula">${intro.takeaway}</div>
-      </div>
+      </div>`
+          : ""
+      }
       ${
         intro.why && intro.why.length > 0
           ? `<div class="venture-why">

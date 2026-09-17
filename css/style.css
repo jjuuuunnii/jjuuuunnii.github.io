@@ -1198,6 +1198,10 @@ section {
   overflow: hidden;
 }
 
+.venture-intro--solo {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .venture-intro::before {
   content: "";
   position: absolute;
