@@ -87,7 +87,10 @@ function renderExperience(exp) {
         <div class="timeline-card-header">
           <div class="timeline-card-left">
             ${a.version ? `<span class="version-badge">${a.version}</span>` : ""}
-            <span class="timeline-title">${a.title}</span>
+            <div class="timeline-heading">
+              <span class="timeline-title">${a.title}</span>
+              ${a.subtitle ? `<span class="timeline-subtitle">${a.subtitle}</span>` : ""}
+            </div>
           </div>
           <svg class="timeline-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"/>
@@ -101,14 +104,24 @@ function renderExperience(exp) {
             </div>
             <div class="timeline-section">
               <div class="timeline-section-label solution">Solution</div>
-              <ul>
-                ${a.solution.map((s) => `<li>${s}</li>`).join("")}
-              </ul>
+              ${
+                Array.isArray(a.solution)
+                  ? `<ul>${a.solution.map((s) => `<li>${s}</li>`).join("")}</ul>`
+                  : `<p>${a.solution}</p>`
+              }
             </div>
             <div class="timeline-section">
               <div class="timeline-section-label result">Result</div>
               <p>${a.result}</p>
             </div>
+            ${
+              a.details && a.details.length > 0
+                ? `<div class="timeline-section timeline-details">
+              <div class="timeline-section-label detail">Details</div>
+              <ul>${a.details.map((d) => `<li>${d}</li>`).join("")}</ul>
+            </div>`
+                : ""
+            }
             <div class="timeline-tags">
               ${a.tags.map((t) => `<span class="timeline-tag">${t}</span>`).join("")}
             </div>
@@ -254,7 +267,7 @@ function renderVentures(ventures) {
           <span class="venture-delta-value">${intro.delta.to.value}</span>
           <span class="venture-delta-label">${intro.delta.to.label}</span>
         </div>
-        <div class="venture-formula">${intro.formula}</div>
+        <div class="venture-formula">${intro.takeaway}</div>
       </div>
     </div>
     ${

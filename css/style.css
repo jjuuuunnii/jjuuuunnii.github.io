@@ -541,7 +541,7 @@ section {
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  min-width: 130px;
+  min-width: 190px;
   flex-shrink: 0;
 }
 
@@ -717,10 +717,25 @@ section {
   letter-spacing: 0.02em;
 }
 
+.timeline-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
 .timeline-title {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-primary);
+  word-break: keep-all;
+}
+
+.timeline-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
 }
 
 .timeline-chevron {
@@ -766,6 +781,17 @@ section {
 .timeline-section-label.problem { color: var(--color-problem); }
 .timeline-section-label.solution { color: var(--color-solution); }
 .timeline-section-label.result { color: var(--color-result); }
+.timeline-section-label.detail { color: var(--text-muted); }
+
+.timeline-details {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-hover);
+}
+
+.timeline-details li {
+  color: var(--text-muted);
+}
 
 .timeline-section p,
 .timeline-section li {
@@ -1224,8 +1250,9 @@ section {
 
 .venture-formula {
   grid-column: 1 / -1;
-  font-family: var(--font-mono);
   font-size: 0.8125rem;
+  line-height: 1.6;
+  word-break: keep-all;
   color: var(--text-secondary);
   padding-top: var(--space-md);
   border-top: 1px solid var(--border);
