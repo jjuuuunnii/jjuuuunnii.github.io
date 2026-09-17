@@ -1273,6 +1273,61 @@ section {
   border-top: 1px solid var(--border);
 }
 
+/* 창업 동기 4단계: 하고 싶었던 과정 → 실제로 한 일 */
+.venture-why {
+  grid-column: 1 / -1;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border);
+}
+
+.venture-why-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-md);
+}
+
+.venture-why-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.venture-why-step {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.venture-why-no {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--accent);
+}
+
+.venture-why-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: keep-all;
+}
+
+.venture-why-desc {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  word-break: keep-all;
+}
+
 .venture-program {
   display: flex;
   align-items: center;
@@ -1975,6 +2030,7 @@ footer {
     gap: var(--space-xl);
   }
   .venture-intro { grid-template-columns: 1fr; }
+  .venture-why-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .venture-card { grid-template-columns: 1fr; }
   .venture-media { border-right: none; border-bottom: 1px solid var(--border); }
   .venture-media img { position: static; }
@@ -2064,6 +2120,7 @@ footer {
 
   /* 창업 */
   .venture-intro { padding: var(--space-lg); }
+  .venture-why-steps { grid-template-columns: 1fr; }
   .venture-lesson { font-size: 0.9375rem; }
   .venture-delta-value { font-size: 1.75rem; }
   .venture-body { padding: 20px; }

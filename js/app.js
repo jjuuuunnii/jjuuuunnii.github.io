@@ -268,6 +268,24 @@ function renderVentures(ventures) {
         </div>
         <div class="venture-formula">${intro.takeaway}</div>
       </div>
+      ${
+        intro.why && intro.why.length > 0
+          ? `<div class="venture-why">
+        <div class="venture-why-label">${intro.whyLabel}</div>
+        <ol class="venture-why-steps">
+          ${intro.why
+            .map(
+              (s) => `<li class="venture-why-step">
+            <span class="venture-why-no">${s.no}</span>
+            <span class="venture-why-title">${s.title}</span>
+            <p class="venture-why-desc">${s.desc}</p>
+          </li>`
+            )
+            .join("")}
+        </ol>
+      </div>`
+          : ""
+      }
     </div>
     ${
       program
