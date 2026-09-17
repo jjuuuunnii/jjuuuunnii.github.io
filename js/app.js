@@ -1,577 +1,129 @@
-// ============================================================
-// 포트폴리오 렌더링 로직
-// ============================================================
+// 문서 내용을 프로젝트별로 렌더링한다. 입력 데이터는 로컬 정적 파일만 사용한다.
+const escapeHTML = (value = "") => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+const text = escapeHTML;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const d = PORTFOLIO_DATA;
-
-  renderHero(d.hero);
-  renderSkills(d.skills);
-  renderExperience(d.experience);
-  renderProjects(d.projects);
-  renderVentures(d.ventures);
-  renderActivities(d.activities, d.awards, d.education, d.military, d.languages);
-  initNavbar();
-  initModal();
-  initAnimations();
-});
-
-// --- 히어로 ---
-function renderHero(hero) {
-  const section = document.getElementById("hero");
-
-  document.getElementById("hero-label").textContent = hero.label;
-
-  const nameEl = section.querySelector(".hero-name");
-  nameEl.innerHTML = `${hero.name} <span class="accent">${hero.nickname}</span>`;
-
-  document.getElementById("about-profile-img").src = hero.profileImage;
-  document.getElementById("about-profile-img").alt = `${hero.name} 프로필 사진`;
-  document.getElementById("about-description").textContent = hero.description;
-
-  const contacts = document.getElementById("about-contacts");
-  contacts.innerHTML = `
-    <a href="mailto:${hero.contacts.email}" class="btn-icon" title="Email">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-    </a>
-    <a href="${hero.contacts.github}" target="_blank" rel="noopener" class="btn-icon" title="GitHub">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-    </a>
-  `;
+function renderDirectory(projects) {
+  document.getElementById("project-nav-links").innerHTML = `<a class="project-nav-index" href="#projects">목록 <span aria-hidden="true">↑</span></a>${projects.map((project) => `<a href="#${project.id}" data-project="${project.id}"><span>${project.number}</span>${text(project.name)}</a>`).join("")}`;
+  document.getElementById("directory-list").innerHTML = projects.map((project) => `
+    <a class="directory-row ${project.id}" href="#${project.id}">
+      <span class="directory-number">${project.number}</span>
+      <h3>${text(project.name)}</h3>
+      <span class="directory-description">${text(project.short)}</span>
+      <span class="directory-type">${text(project.type)}</span>
+      <span class="directory-arrow" aria-hidden="true">↗</span>
+    </a>`).join("");
 }
 
-// --- 스킬 ---
-function renderSkills(skills) {
-  const grid = document.getElementById("skills-grid");
-  grid.innerHTML = skills
-    .map(
-      (skill, i) => `
-    <div class="skill-row reveal-stagger" style="transition-delay: ${i * 60}ms">
-      <div class="skill-category">${skill.category}</div>
-      <div class="skill-tags">
-        ${skill.items.map((item) => `<span class="skill-tag">${item}</span>`).join("")}
-      </div>
+function renderDiagram() {
+  return `<figure class="flow-diagram">
+    <figcaption><span class="eyebrow">FLOAD / V1 → V2</span><strong>대여 요청과 장비 회신을 나눈 흐름</strong></figcaption>
+    <div class="diagram-lanes">
+      <div class="diagram-lane"><span class="lane-label">요청</span><div>사용자 앱</div><span class="connector" aria-hidden="true">→</span><div>대여 요청 접수<span>접수 응답 후 스레드 반환</span></div><span class="connector" aria-hidden="true">→</span><div>Kafka · 바이크 서버<span>MQTT로 명령 전달</span></div><span class="connector" aria-hidden="true">→</span><div>자전거</div></div>
+      <div class="diagram-lane response-lane"><span class="lane-label">회신</span><div>자전거 응답</div><span class="connector" aria-hidden="true">→</span><div>바이크 서버<span>성공 · 오류 이벤트 발행</span></div><span class="connector" aria-hidden="true">→</span><div>Kafka · SSE 서버<span>회신 이벤트 소비</span></div><span class="connector" aria-hidden="true">→</span><div>앱에 결과 전달</div></div>
     </div>
-  `
-    )
-    .join("");
+    <p>Kafka는 V1에도 사용했습니다. V2에서는 저장된 응답을 반복 확인하는 대신, 회신 이벤트가 후속 처리를 이어가도록 바꿨습니다.</p>
+  </figure>`;
 }
 
-// --- 경력 ---
-function renderExperience(exp) {
-  const header = document.getElementById("experience-header");
-  header.innerHTML = `
-    <div class="exp-meta">
-      <span class="exp-company">${exp.company}</span>
-      <span class="exp-role">${exp.role}</span>
+function renderEvidence(project) {
+  if (!project.evidence) return "";
+  return `<div class="evidence-grid">${project.evidence.map((item) => `<div class="evidence-item"><strong>${text(item.value)}</strong><h4>${text(item.label)}</h4><p>${text(item.text)}</p></div>`).join("")}</div>`;
+}
+
+function renderTable(table) {
+  if (!table) return "";
+  return `<div class="result-table-wrap"><table><caption>${text(table.caption)}</caption><thead><tr>${table.headers.map((heading) => `<th scope="col">${text(heading)}</th>`).join("")}</tr></thead><tbody>${table.rows.map((row) => `<tr>${row.map((cell, index) => index === 0 ? `<th scope="row">${text(cell)}</th>` : `<td${index === 3 ? ` class="verdict ${cell === "통과" ? "pass" : cell === "미달" ? "miss" : "unknown"}"` : ""}>${text(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table><p class="table-note">${text(table.note)}</p></div>`;
+}
+
+function renderProject(project) {
+  return `<article class="case-study case-${project.id}" id="${project.id}" aria-labelledby="${project.id}-title">
+    <header class="case-cover"><div class="shell">
+      <div class="case-topline"><span class="case-number">${project.number} / ${text(project.english)}</span><span>${text(project.type)}</span><span>${text(project.period)}</span></div>
+      <div class="case-heading"><div><p class="project-name">${text(project.name)}</p><h2 id="${project.id}-title">${project.title.split("<br>").map(text).join("<br>")}</h2></div><p class="project-status">${text(project.status)}</p></div>
+      <nav class="case-contents" aria-label="${text(project.name)} 내용"><a href="#${project.id}-overview">01 소개</a><a href="#${project.id}-work">02 내가 한 일</a><a href="#${project.id}-outcome">03 결과와 판단</a></nav>
+    </div></header>
+    <div class="shell case-body">
+      <div class="case-overview-heading" id="${project.id}-overview"><p class="eyebrow">01 / OVERVIEW</p><h3>프로젝트 소개</h3></div>
+      <div class="case-intro">
+        <div class="intro-copy"><h3>시작한 이유</h3><p>${text(project.background)}</p><h3>어떤 서비스인가</h3><p>${text(project.description)}</p><dl class="project-meta"><div><dt>내 역할</dt><dd>${text(project.role)}</dd></div><div><dt>작업 범위</dt><dd>${text(project.scope)}</dd></div><div><dt>함께한 사람</dt><dd>${text(project.team)}</dd></div></dl></div>
+        <figure class="project-figure ${project.imageStyle}"><div class="project-image-wrap"><img src="${project.image}" alt="${text(project.imageAlt)}" loading="lazy" decoding="async"></div><figcaption>${text(project.imageCaption)}</figcaption></figure>
+      </div>
+      <div class="user-flow"><span class="flow-label">이용 흐름</span><ol>${project.flow.map((step, i) => `<li><span>${String(i + 1).padStart(2, "0")}</span>${text(step)}</li>`).join("")}</ol></div>
+      ${project.facts ? `<div class="project-facts">${project.facts.map((fact) => `<div><strong>${text(fact.value)}</strong><span>${text(fact.label)}</span></div>`).join("")}</div>` : ""}
+      <div class="work-section" id="${project.id}-work"><div class="case-section-label"><p class="eyebrow">02 / MY WORK</p><h3>내가 한 일</h3></div><div class="work-content"><h3 class="work-title">${text(project.workTitle)}</h3>${project.work.map((item, index) => `<section class="work-item"><div class="work-item-title"><span>${String(index + 1).padStart(2, "0")}</span><h4>${text(item.title)}</h4></div><p>${text(item.text)}</p><p class="work-result"><span>바뀐 점</span>${text(item.result)}</p></section>`).join("")}</div></div>
+      ${project.diagram ? renderDiagram() : ""}
+      ${project.details?.length ? `<div class="technical-details"><p class="detail-intro">구현과 운영 더 보기</p>${project.details.map((detail) => `<details><summary>${text(detail.title)}<span class="detail-sign" aria-hidden="true">＋</span></summary><div class="detail-content">${detail.paragraphs.map((paragraph) => `<p>${text(paragraph)}</p>`).join("")}</div></details>`).join("")}</div>` : ""}
+      <div class="outcome-section" id="${project.id}-outcome"><div class="case-section-label"><p class="eyebrow">03 / OUTCOME</p><h3>결과와 판단</h3></div><div class="outcome-content">${renderTable(project.table)}${renderEvidence(project)}<h3>${text(project.outcomeTitle)}</h3><p>${text(project.outcome)}</p>${project.note ? `<p class="outcome-note">${text(project.note)}</p>` : ""}</div></div>
+      <div class="case-bottom"><div class="tech-list"><span class="eyebrow">${project.id === "offstage" ? "TOOLS" : "STACK"}</span><p>${project.tech.map(text).join("<span aria-hidden=\"true\"> / </span>")}</p></div>${project.repo ? `<a class="text-link" href="${project.repo}" target="_blank" rel="noopener noreferrer">프로젝트 저장소 <span aria-hidden="true">↗</span></a>` : ""}<a class="index-link" href="#projects">목록으로 ↑</a></div>
     </div>
-    <div class="exp-period">${exp.period}</div>
-    <div class="exp-product">${exp.product} — ${exp.productDescription}</div>
-    ${
-      exp.stats && exp.stats.length > 0
-        ? `<div class="exp-stats">
-        ${exp.stats.map((s) => `<div class="exp-stat"><span class="exp-stat-value">${s.value}</span><span class="exp-stat-label">${s.label}</span></div>`).join("")}
-      </div>`
-        : ""
-    }
-    <div class="exp-summary">${exp.summary}</div>
-    ${exp.note ? `<div class="exp-note">${exp.note}</div>` : ""}
-  `;
-
-  const timeline = document.getElementById("timeline");
-  timeline.innerHTML = exp.achievements
-    .map(
-      (a, i) => `
-    <div class="timeline-item reveal" style="transition-delay: ${i * 80}ms">
-      <div class="timeline-card${i === 0 ? " open" : ""}" data-index="${i}">
-        <div class="timeline-card-header">
-          <div class="timeline-card-left">
-            ${a.version ? `<span class="version-badge">${a.version}</span>` : ""}
-            <div class="timeline-heading">
-              <span class="timeline-title">${a.title}</span>
-              ${a.subtitle ? `<span class="timeline-subtitle">${a.subtitle}</span>` : ""}
-            </div>
-          </div>
-          <svg class="timeline-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </div>
-        <div class="timeline-card-body">
-          <div class="timeline-card-content">
-            <div class="timeline-section">
-              <div class="timeline-section-label problem">Problem</div>
-              <p>${a.problem}</p>
-            </div>
-            <div class="timeline-section">
-              <div class="timeline-section-label solution">Solution</div>
-              ${
-                Array.isArray(a.solution)
-                  ? `<ul>${a.solution.map((s) => `<li>${s}</li>`).join("")}</ul>`
-                  : `<p>${a.solution}</p>`
-              }
-            </div>
-            <div class="timeline-section">
-              <div class="timeline-section-label result">Result</div>
-              <p>${a.result}</p>
-            </div>
-            ${
-              a.details && a.details.length > 0
-                ? `<div class="timeline-section timeline-details">
-              <div class="timeline-section-label detail">Details</div>
-              <ul>${a.details.map((d) => `<li>${d}</li>`).join("")}</ul>
-            </div>`
-                : ""
-            }
-            <div class="timeline-tags">
-              ${a.tags.map((t) => `<span class="timeline-tag">${t}</span>`).join("")}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
-    )
-    .join("");
-
-  timeline.querySelectorAll(".timeline-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      card.classList.toggle("open");
-    });
-  });
+  </article>`;
 }
 
-// --- 프로젝트 ---
-function renderProjects(projects) {
-  const grid = document.getElementById("projects-grid");
-  grid.innerHTML = projects
-    .map(
-      (p, i) => {
-        // 이미지 영역: 복수 이미지(슬라이드), 단일 이미지, 플레이스홀더
-        let imageHTML;
-        if (p.images && p.images.length > 1) {
-          imageHTML = `
-            <div class="project-carousel" data-carousel>
-              <div class="carousel-track">
-                ${p.images.map((img, idx) => `<img src="${img}" alt="${p.title} ${idx + 1}" class="${idx === 0 ? "active" : ""}" loading="lazy">`).join("")}
-              </div>
-              <button class="carousel-btn carousel-prev" data-dir="prev" aria-label="이전">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-              </button>
-              <button class="carousel-btn carousel-next" data-dir="next" aria-label="다음">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
-              </button>
-              <div class="carousel-dots">
-                ${p.images.map((_, idx) => `<span class="carousel-dot ${idx === 0 ? "active" : ""}" data-index="${idx}"></span>`).join("")}
-              </div>
-            </div>`;
-        } else if (p.image) {
-          imageHTML = `<div class="project-image"><img src="${p.image}" alt="${p.title}" loading="lazy"></div>`;
-        } else {
-          imageHTML = `<div class="project-image-placeholder gradient-${(i % 2) + 1}"><span class="placeholder-title">${p.title}</span></div>`;
-        }
-
-        const metaParts = [p.team, p.period].filter(Boolean);
-        const metaHTML = metaParts.join(`<span class="dot"></span>`);
-
-        return `
-    <div class="project-card reveal" style="transition-delay: ${i * 100}ms">
-      ${imageHTML}
-      <div class="project-body">
-        <div class="project-meta">${metaHTML}</div>
-        <h3 class="project-title">${p.title}</h3>
-        <div class="project-subtitle">${p.subtitle}</div>
-        <p class="project-description">${p.description}</p>
-        <p class="project-role">${p.role}</p>
-        ${
-          p.highlights && p.highlights.length > 0
-            ? `<ul class="project-highlights">
-            ${p.highlights.map((h) => `<li>${h}</li>`).join("")}
-          </ul>`
-            : ""
-        }
-        <div class="project-tech">
-          ${p.tech.map((t) => `<span class="project-tech-tag">${t}</span>`).join("")}
-        </div>
-        ${p.repo ? `<a class="project-repo" href="${p.repo}" target="_blank" rel="noopener">GitHub 저장소 ↗</a>` : ""}
-      </div>
-    </div>`;
-      }
-    )
-    .join("");
-
-  // 캐러셀 초기화
-  initCarousels();
+function renderEarlier(projects) {
+  document.getElementById("earlier-list").innerHTML = projects.map((project) => `<article class="earlier-project ${project.image ? "" : "no-image"}">${project.image ? `<div class="earlier-image"><img src="${project.image}" alt="${text(project.name)} 서비스 소개" loading="lazy" decoding="async"></div>` : `<div class="earlier-monogram" aria-hidden="true">URL<br><span>CHECK</span></div>`}<div class="earlier-copy"><p class="earlier-meta">${text(project.period)} · ${text(project.role)}</p><h3>${text(project.name)}</h3><p>${text(project.description)}</p>${project.work ? `<p class="earlier-work">${text(project.work)}</p>` : ""}<p class="earlier-tech">${text(project.tech)}</p></div><p class="earlier-result">${text(project.result)}</p></article>`).join("");
 }
 
-// --- 캐러셀 ---
-function initCarousels() {
-  document.querySelectorAll("[data-carousel]").forEach((carousel) => {
-    const images = carousel.querySelectorAll(".carousel-track img");
-    const dots = carousel.querySelectorAll(".carousel-dot");
-    let current = 0;
-
-    function goTo(idx) {
-      images[current].classList.remove("active");
-      dots[current].classList.remove("active");
-      current = (idx + images.length) % images.length;
-      images[current].classList.add("active");
-      dots[current].classList.add("active");
-    }
-
-    carousel.querySelector(".carousel-prev").addEventListener("click", (e) => {
-      e.stopPropagation();
-      goTo(current - 1);
-    });
-
-    carousel.querySelector(".carousel-next").addEventListener("click", (e) => {
-      e.stopPropagation();
-      goTo(current + 1);
-    });
-
-    dots.forEach((dot) => {
-      dot.addEventListener("click", (e) => {
-        e.stopPropagation();
-        goTo(parseInt(dot.dataset.index));
-      });
-    });
-
-    // 자동 슬라이드 (5초 간격)
-    let autoSlide = setInterval(() => goTo(current + 1), 5000);
-    carousel.addEventListener("mouseenter", () => clearInterval(autoSlide));
-    carousel.addEventListener("mouseleave", () => {
-      autoSlide = setInterval(() => goTo(current + 1), 5000);
-    });
-  });
+function renderBackground(data) {
+  document.getElementById("career-list").innerHTML = data.career.map((item) => `<article class="career-item"><p class="career-date">${text(item.date)}</p><h4>${text(item.title)}</h4><p>${text(item.text)}</p></article>`).join("");
+  document.getElementById("activity-list").innerHTML = data.activities.map((item) => `<article class="activity-item"><h4>${text(item.title)}</h4><p>${text(item.text)}</p></article>`).join("");
+  document.getElementById("awards-list").innerHTML = data.awards.map((award) => `<div class="award-row"><span>${text(award[0])}</span><strong>${text(award[1])}</strong><span>${text(award[2])}</span></div>`).join("");
+  document.getElementById("skills-list").innerHTML = data.skills.map((skill) => `<div class="skill-row"><h3>${text(skill.name)}</h3><p>${text(skill.tools)}</p><p>${text(skill.context)}</p></div>`).join("");
 }
 
-// --- 창업 ---
-function renderVentures(ventures) {
-  const root = document.getElementById("ventures-content");
-  if (!ventures) return;
-  const { intro, program, items } = ventures;
+function initNavigation() {
+  const button = document.querySelector(".menu-toggle");
+  const links = document.getElementById("nav-links");
+  function closeMenu() { button.setAttribute("aria-expanded", "false"); links.classList.remove("is-open"); }
+  button.addEventListener("click", () => { const open = button.getAttribute("aria-expanded") === "true"; button.setAttribute("aria-expanded", String(!open)); links.classList.toggle("is-open", !open); });
+  links.addEventListener("click", (event) => { if (event.target.closest("a")) closeMenu(); });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && button.getAttribute("aria-expanded") === "true") { closeMenu(); button.focus(); } });
+  document.addEventListener("click", (event) => { if (!event.target.closest(".nav")) closeMenu(); });
+  window.matchMedia("(min-width: 761px)").addEventListener("change", closeMenu);
 
-  const introHTML = `
-    <div class="venture-intro${intro.delta ? "" : " venture-intro--solo"} reveal">
-      <div class="venture-intro-text">
-        <div class="venture-eyebrow">${intro.eyebrow}</div>
-        <p class="venture-lesson">${intro.lesson}</p>
-      </div>
-      ${
-        intro.delta
-          ? `<div class="venture-delta">
-        <div class="venture-delta-item">
-          <span class="venture-delta-value muted">${intro.delta.from.value}</span>
-          <span class="venture-delta-label">${intro.delta.from.label}</span>
-        </div>
-        <svg class="venture-delta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
-        <div class="venture-delta-item">
-          <span class="venture-delta-value">${intro.delta.to.value}</span>
-          <span class="venture-delta-label">${intro.delta.to.label}</span>
-        </div>
-        <div class="venture-formula">${intro.takeaway}</div>
-      </div>`
-          : ""
-      }
-      ${
-        intro.why && intro.why.length > 0
-          ? `<div class="venture-why">
-        <div class="venture-why-label">${intro.whyLabel}</div>
-        <ol class="venture-why-steps">
-          ${intro.why
-            .map(
-              (s) => `<li class="venture-why-step">
-            <span class="venture-why-no">${s.no}</span>
-            <span class="venture-why-title">${s.title}</span>
-            <p class="venture-why-desc">${s.desc}</p>
-          </li>`
-            )
-            .join("")}
-        </ol>
-      </div>`
-          : ""
-      }
-    </div>
-    ${
-      program
-        ? `<div class="venture-program reveal">
-        <span class="venture-program-tag">Program</span>
-        <span class="venture-program-name">${program.name}</span>
-        <span class="venture-program-desc">${program.description}</span>
-      </div>`
-        : ""
-    }
-  `;
-
-  const cardsHTML = items
-    .map(
-      (v, i) => `
-    <article class="venture-card reveal" style="transition-delay: ${i * 80}ms">
-      <div class="venture-media"><img src="${v.image}" alt="${v.name} 화면" loading="lazy"></div>
-      <div class="venture-body">
-        <div class="venture-meta">
-          <span class="venture-index">${v.index}</span>
-          <span>${v.period}</span><span class="dot"></span><span>${v.role}</span>
-        </div>
-        <h3 class="venture-name">${v.name}</h3>
-        <p class="venture-oneliner">${v.oneLiner}</p>
-        <span class="venture-status">${v.status}</span>
-        <p class="venture-who"><span>누구의 어떤 문제</span>${v.who}</p>
-        <div class="venture-metrics">
-          ${v.metrics
-            .map(
-              (m) => `
-            <div class="venture-metric ${m.tone}">
-              <span class="venture-metric-value">${m.value}</span>
-              <span class="venture-metric-label">${m.label}</span>
-            </div>`
-            )
-            .join("")}
-        </div>
-        ${
-          v.tech && v.tech.length > 0
-            ? `<div class="venture-tech">${v.tech.map((t) => `<span class="project-tech-tag">${t}</span>`).join("")}</div>`
-            : ""
-        }
-        <button class="venture-toggle" type="button" aria-expanded="false">
-          자세히 보기
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="venture-details">
-          <div class="venture-details-inner">
-            ${v.sections
-              .map(
-                (sec) => `
-              <div class="timeline-section">
-                <div class="timeline-section-label ${sec.tone}">${sec.label}</div>
-                <ul>${sec.items.map((it) => `<li>${it}</li>`).join("")}</ul>
-              </div>`
-              )
-              .join("")}
-            ${v.learned ? `<div class="venture-learned">${v.learned}</div>` : ""}
-          </div>
-        </div>
-      </div>
-    </article>`
-    )
-    .join("");
-
-  root.innerHTML = introHTML + `<div class="venture-list">${cardsHTML}</div>`;
-
-  root.querySelectorAll(".venture-toggle").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const card = btn.closest(".venture-card");
-      const open = card.classList.toggle("open");
-      btn.setAttribute("aria-expanded", String(open));
-      btn.firstChild.textContent = open ? "접기 " : "자세히 보기 ";
-    });
-  });
-}
-
-// --- 활동/수상 ---
-function renderActivities(activities, awards, education, military, languages = []) {
-  const content = document.getElementById("activities-content");
-  content.innerHTML = `
-    <div class="activities-section reveal">
-      <div class="activities-section-title">Activities</div>
-      ${activities
-        .map(
-          (a) => `
-        <div class="activity-item">
-          <div class="activity-title">${a.title}</div>
-          <div class="activity-desc">${a.description}</div>
-        </div>
-      `
-        )
-        .join("")}
-
-      <div class="activities-section-title" style="margin-top: 24px;">Education · Military · Language</div>
-      <div class="activity-item">
-        <div class="activity-title">${education.university} ${education.major}</div>
-        <div class="activity-desc">${education.period}</div>
-      </div>
-      <div class="activity-item">
-        <div class="activity-title">${military.title} (${military.role})</div>
-        <div class="activity-desc">${military.period}</div>
-      </div>
-      ${languages
-        .map(
-          (l) => `
-      <div class="activity-item">
-        <div class="activity-title">${l.title}</div>
-        <div class="activity-desc">${l.description}</div>
-      </div>`
-        )
-        .join("")}
-    </div>
-
-    <div class="activities-section reveal">
-      <div class="activities-section-title">Awards</div>
-      ${awards
-        .map(
-          (a) => `
-        <div class="award-item">
-          <span class="award-icon">&#127942;</span>
-          <span class="award-text">${a}</span>
-        </div>
-      `
-        )
-        .join("")}
-    </div>
-  `;
-}
-
-// --- 모달 ---
-function initModal() {
-  const modal = document.getElementById("project-modal");
-  const imageArea = document.getElementById("modal-image-area");
-  const content = document.getElementById("modal-content");
-  const closeBtn = modal.querySelector(".modal-close");
-  const backdrop = modal.querySelector(".modal-backdrop");
-  let modalCarouselInterval = null;
-
-  function openModal(projectIndex) {
-    const p = PORTFOLIO_DATA.projects[projectIndex];
-    if (!p) return;
-
-    // 이미지 영역
-    if (p.images && p.images.length > 1) {
-      imageArea.innerHTML = `
-        <div class="modal-carousel">
-          <div class="modal-carousel-track">
-            ${p.images.map((img, i) => `<img src="${img}" alt="${p.title} ${i + 1}" class="${i === 0 ? "active" : ""}">`).join("")}
-          </div>
-          <button class="modal-carousel-btn prev" aria-label="이전">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <button class="modal-carousel-btn next" aria-label="다음">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
-          </button>
-          <div class="modal-carousel-dots">
-            ${p.images.map((_, i) => `<button class="modal-carousel-dot ${i === 0 ? "active" : ""}" data-index="${i}"></button>`).join("")}
-          </div>
-        </div>`;
-      initModalCarousel();
-    } else if (p.image) {
-      imageArea.innerHTML = `<img class="modal-single-img" src="${p.image}" alt="${p.title}">`;
-    } else {
-      imageArea.innerHTML = `<div class="modal-placeholder"><span>${p.title}</span></div>`;
-    }
-
-    // 콘텐츠 영역
-    const metaParts = [p.team, p.period].filter(Boolean);
-    const metaHTML = metaParts.join('<span class="dot"></span>');
-
-    content.innerHTML = `
-      <div class="modal-meta">${metaHTML}</div>
-      <h2 class="modal-title">${p.title}</h2>
-      <div class="modal-subtitle">${p.subtitle}</div>
-      <p class="modal-description">${p.description}</p>
-      <div class="modal-role">${p.role}</div>
-      ${p.highlights && p.highlights.length > 0 ? `
-        <div class="modal-highlights-label">Highlights</div>
-        <ul class="modal-highlights">
-          ${p.highlights.map((h) => `<li>${h}</li>`).join("")}
-        </ul>
-      ` : ""}
-      <div class="modal-tech">
-        ${p.tech.map((t) => `<span class="modal-tech-tag">${t}</span>`).join("")}
-      </div>
-      ${p.repo ? `<a class="project-repo" href="${p.repo}" target="_blank" rel="noopener">GitHub 저장소 ↗</a>` : ""}
-    `;
-
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-  }
-
-  function closeModal() {
-    modal.classList.remove("active");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-open");
-    if (modalCarouselInterval) {
-      clearInterval(modalCarouselInterval);
-      modalCarouselInterval = null;
+  // 이전 배포에서 쓰던 링크도 해당 내용으로 이어 준다.
+  const legacyAnchors = { experience: "fload", ventures: "forget", activities: "about" };
+  function resolveLegacyHash() {
+    const originalHash = location.hash.slice(1);
+    if (legacyAnchors[originalHash]) {
+      history.replaceState(null, "", `#${legacyAnchors[originalHash]}`);
+      document.getElementById(legacyAnchors[originalHash])?.scrollIntoView({ behavior: "instant" });
     }
   }
-
-  function initModalCarousel() {
-    const carousel = imageArea.querySelector(".modal-carousel");
-    if (!carousel) return;
-    const imgs = carousel.querySelectorAll(".modal-carousel-track img");
-    const dots = carousel.querySelectorAll(".modal-carousel-dot");
-    let cur = 0;
-
-    function go(idx) {
-      imgs[cur].classList.remove("active");
-      dots[cur].classList.remove("active");
-      cur = (idx + imgs.length) % imgs.length;
-      imgs[cur].classList.add("active");
-      dots[cur].classList.add("active");
-    }
-
-    carousel.querySelector(".prev").addEventListener("click", () => go(cur - 1));
-    carousel.querySelector(".next").addEventListener("click", () => go(cur + 1));
-    dots.forEach((d) => d.addEventListener("click", () => go(parseInt(d.dataset.index))));
-
-    modalCarouselInterval = setInterval(() => go(cur + 1), 4000);
-    carousel.addEventListener("mouseenter", () => clearInterval(modalCarouselInterval));
-    carousel.addEventListener("mouseleave", () => {
-      modalCarouselInterval = setInterval(() => go(cur + 1), 4000);
-    });
-  }
-
-  // 카드 클릭 이벤트
-  document.getElementById("projects-grid").addEventListener("click", (e) => {
-    const card = e.target.closest(".project-card");
-    if (!card) return;
-    // 캐러셀 버튼 클릭은 무시
-    if (e.target.closest(".carousel-btn") || e.target.closest(".carousel-dot") || e.target.closest(".project-repo")) return;
-    const index = [...card.parentElement.children].indexOf(card);
-    openModal(index);
-  });
-
-  closeBtn.addEventListener("click", closeModal);
-  backdrop.addEventListener("click", closeModal);
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("active")) closeModal();
-  });
+  resolveLegacyHash();
+  window.addEventListener("hashchange", resolveLegacyHash);
+  if (location.hash) requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "instant" }));
 }
 
-// --- 네비게이션 ---
-function initNavbar() {
-  const navbar = document.getElementById("navbar");
-  const toggle = document.querySelector(".nav-toggle");
-  const navLinks = document.querySelector(".nav-links");
-  const links = document.querySelectorAll(".nav-links a");
-
+function initProjectNavigation() {
+  const articles = [...document.querySelectorAll(".case-study")];
+  const links = [...document.querySelectorAll("[data-project]")];
+  const nav = document.getElementById("project-nav-links");
+  let activeId = "";
+  let queued = false;
+  function update() {
+    queued = false;
+    const offset = document.querySelector(".site-header").offsetHeight + nav.offsetHeight + 48;
+    const current = articles.findLast((article) => article.getBoundingClientRect().top <= offset) || articles[0];
+    if (current.id === activeId) return;
+    activeId = current.id;
+    links.forEach((link) => {
+      if (link.dataset.project === activeId) {
+        link.setAttribute("aria-current", "location");
+        // 좁은 화면에서도 현재 프로젝트 이름이 메뉴 안에 보이도록 한다.
+        if (nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: link.offsetLeft - nav.offsetLeft - 20, behavior: "instant" });
+      } else link.removeAttribute("aria-current");
+    });
+  }
   window.addEventListener("scroll", () => {
-    navbar.classList.toggle("scrolled", window.scrollY > 50);
-  });
-
-  toggle.addEventListener("click", () => {
-    toggle.classList.toggle("active");
-    navLinks.classList.toggle("open");
-  });
-
-  links.forEach((link) => {
-    link.addEventListener("click", () => {
-      toggle.classList.remove("active");
-      navLinks.classList.remove("open");
-    });
-  });
-
-  const sections = document.querySelectorAll("section[id]");
-  const observerOptions = { rootMargin: "-30% 0px -70% 0px" };
-
-  const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        links.forEach((l) => l.classList.remove("active"));
-        const activeLink = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
-        if (activeLink) activeLink.classList.add("active");
-      }
-    });
-  }, observerOptions);
-
-  sections.forEach((s) => sectionObserver.observe(s));
+    if (!queued) { queued = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener("resize", () => { activeId = ""; update(); });
+  update();
 }
+
+renderDirectory(PORTFOLIO_DATA.projects);
+document.getElementById("case-studies").innerHTML = PORTFOLIO_DATA.projects.map(renderProject).join("");
+renderEarlier(PORTFOLIO_DATA.earlier);
+renderBackground(PORTFOLIO_DATA);
+initNavigation();
+initProjectNavigation();

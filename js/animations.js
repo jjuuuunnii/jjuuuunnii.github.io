@@ -1,71 +1,8 @@
-// ============================================================
-// 스크롤 애니메이션 + 타이핑 효과
-// ============================================================
-
-function initAnimations() {
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (prefersReducedMotion) {
-    document.querySelectorAll(".reveal, .reveal-stagger").forEach((el) => {
-      el.classList.add("revealed");
-    });
-    const tagline = document.querySelector(".hero-tagline");
-    if (tagline) tagline.textContent = PORTFOLIO_DATA.hero.tagline;
-    return;
-  }
-
-  initScrollReveal();
-  initTypingEffect();
-}
-
-// --- 스크롤 리빌 ---
-function initScrollReveal() {
-  const targets = document.querySelectorAll(".reveal, .reveal-stagger");
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("revealed");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+// 읽는 흐름을 방해하지 않도록 화면 진입 효과를 첫 화면에만 적용한다.
+// 스크롤로 이동하는 본문과 이미지에는 숨김·대기 애니메이션을 적용하지 않는다.
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.querySelector(".hero-main")?.animate(
+    [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "translateY(0)" }],
+    { duration: 550, easing: "cubic-bezier(.2,.7,.2,1)" }
   );
-
-  targets.forEach((el) => observer.observe(el));
-}
-
-// --- 타이핑 효과 ---
-function initTypingEffect() {
-  const tagline = document.querySelector(".hero-tagline");
-  if (!tagline) return;
-
-  const text = PORTFOLIO_DATA.hero.tagline;
-  tagline.innerHTML = '<span class="cursor"></span>';
-
-  let i = 0;
-  const speed = 45;
-
-  function type() {
-    if (i < text.length) {
-      const cursor = tagline.querySelector(".cursor");
-      const char = document.createTextNode(text.charAt(i));
-      tagline.insertBefore(char, cursor);
-      i++;
-      setTimeout(type, speed);
-    } else {
-      setTimeout(() => {
-        const cursor = tagline.querySelector(".cursor");
-        if (cursor) {
-          cursor.style.animation = "none";
-          cursor.style.opacity = "0";
-          setTimeout(() => cursor.remove(), 300);
-        }
-      }, 2500);
-    }
-  }
-
-  setTimeout(type, 600);
 }
